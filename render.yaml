@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: pricepilot
+    env: node
+    plan: free
+    region: oregon
+    buildCommand: npm ci && npm run build
+    startCommand: npm run docker-start
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SHOPIFY_API_KEY
+        value: ${SHOPIFY_API_KEY}
+      - key: SHOPIFY_API_SECRET
+        value: ${SHOPIFY_API_SECRET}
+      - key: SCOPES
+        value: read_products,write_products
+      - key: SHOPIFY_APP_URL
+        value: ${SHOPIFY_APP_URL}
+      - key: SHOPIFY_PARTNER_ORG_ID
+        value: ${SHOPIFY_PARTNER_ORG_ID}
+      - key: SHOPIFY_PARTNER_API_ACCESS_TOKEN
+        value: ${SHOPIFY_PARTNER_API_ACCESS_TOKEN}
+      - key: SHOPIFY_APP_GID
+        value: ${SHOPIFY_APP_GID}
+      - key: SHOPIFY_APP_HANDLE
+        value: ${SHOPIFY_APP_HANDLE}
+      - key: SHOPIFY_PARTNER_API_VERSION
+        value: ${SHOPIFY_PARTNER_API_VERSION}
+      - key: DATABASE_URL
+        value: postgresql://neondb_owner:npg_rxSTCuc4o7qn@ep-solitary-cake-b49js9oy-pooler.c-6.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+
+databases:
+  - name: pricepilot-db
+    plan: free
+    region: oregon
+    postgresVersion: "15"

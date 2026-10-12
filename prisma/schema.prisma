@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CampaignStatus {
+  Draft
+  Scheduled
+  Running
+  Completed
+  Cancelled
+  Failed
+}
+
+model Session {
+  id                  String    @id
+  shop                String
+  state               String
+  isOnline            Boolean   @default(false)
+  scope               String?
+  expires              DateTime?
+  accessToken         String
+  userId              BigInt?
+  firstName           String?
+  lastName            String?
+  email               String?
+  accountOwner        Boolean   @default(false)
+  locale              String?
+  collaborator        Boolean?  @default(false)
+  emailVerified       Boolean?  @default(false)
+  refreshToken        String?
+  refreshTokenExpires DateTime?
+}
+
+model Shop {
+  id                   String        @id @default(cuid())
+  shopDomain           String        @unique
+  shopifyShopId        String?
+  billingPlanHandle    String?
+  billingActive        Boolean       @default(false)
+  billingPlanCheckedAt DateTime?
+  name                 String?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  campaigns            Campaign[]
+  templates            CampaignTemplate[]
+  activityLog          ActivityLog[]
+
+  @@index([shopifyShopId])
+}
+
+model Campaign {
+  id                       String         @id @default(cuid())
+  shopId                   String
+  name                     String
+  description              String?
+  startDate                DateTime?
+  endDate                  DateTime?
+  status                   CampaignStatus @default(Draft)
+  processingToken          String?
+  processingLeaseExpiresAt DateTime?
+  processingAttempts       Int            @default(0)
+  processingNextAttemptAt  DateTime?
+  lastProcessingError      String?
+  recurrenceIntervalDays  Int?
+  recurrenceEndsAt         DateTime?
+  collectionId             String?
+  collectionTitle          String?
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+  shop                     Shop           @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  products                 CampaignProduct[]
+  activityLog              ActivityLog[]
+
+  @@index([shopId, status])
+  @@index([startDate, endDate])
+  @@index([status, processingNextAttemptAt, processingLeaseExpiresAt])
+}
+
+model CampaignProduct {
+  id               String   @id @default(cuid())
+  campaignId       String
+  shopifyProductId String
+  shopifyVariantId String
+  originalPrice    Decimal  @db.Decimal(10, 2)
+  targetPrice      Decimal  @db.Decimal(10, 2)
+  originalCompareAtPrice Decimal? @db.Decimal(10, 2)
+  targetCompareAtPrice   Decimal? @db.Decimal(10, 2)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  campaign         Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, shopifyVariantId])
+  @@index([shopifyProductId])
+}
+
+model CampaignTemplate {
+  id          String   @id @default(cuid())
+  shopId      String
+  name        String
+  description String?
+  config      Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  shop        Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, createdAt])
+}
+
+model ActivityLog {
+  id         String    @id @default(cuid())
+  shopId     String
+  campaignId String?
+  action     String
+  message    String
+  metadata   Json?
+  createdAt  DateTime  @default(now())
+  shop       Shop      @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  campaign   Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+
+  @@index([shopId, createdAt])
+  @@index([campaignId, createdAt])
+}

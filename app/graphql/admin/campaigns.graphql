@@ -1,0 +1,19 @@
+mutation UpdateCampaignVariantPrices(
+  $productId: ID!
+  $variants: [ProductVariantsBulkInput!]!
+) {
+  productVariantsBulkUpdate(
+    productId: $productId
+    variants: $variants
+    allowPartialUpdates: false
+  ) {
+    productVariants {
+      id
+      price
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}
