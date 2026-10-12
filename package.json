@@ -30,7 +30,7 @@
   "dependencies": {
     "@neon/config": "^1.8.6",
     "@neon/env": "^1.5.3",
-    "@prisma/client": "^6.19.3",
+    "@prisma/client": "^7.10.0",
     "@remix-run/dev": "^2.16.1",
     "@remix-run/fs-routes": "^2.16.1",
     "@remix-run/node": "^2.16.1",
@@ -41,7 +41,7 @@
     "@shopify/shopify-app-remix": "^6.0.2",
     "@shopify/shopify-app-session-storage-prisma": "^11.0.1",
     "isbot": "^5.1.0",
-    "prisma": "^6.19.3",
+    "prisma": "^7.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tsx": "^4.23.15",
