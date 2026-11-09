@@ -28,7 +28,7 @@
     "node": ">=20.19 <22 || >=22.12"
   },
   "dependencies": {
-    "@neon/config": "^1.8.6",
+    "@neon/config": "^1.9.4",
     "@neon/env": "^1.5.3",
     "@prisma/client": "^6.19.3",
     "@remix-run/dev": "^2.16.1",
